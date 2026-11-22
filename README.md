@@ -63,3 +63,18 @@ Uses the C# compiler that comes with Windows; nothing to install.
 ```
 
 `tools\make-icon.ps1` redraws `assets\icon.ico` if you change the icon design.
+
+## Mac version
+
+SethWriter also runs as a native Mac app (macOS 13 or later, Apple Silicon or Intel). It is a small Swift app that shows the same editor in a WebKit window, so there is nothing else to install.
+
+Build it with the Swift compiler from Apple's Command Line Tools (`xcode-select --install` if you don't have them):
+
+```bash
+./build-mac.sh            # builds build/SethWriter.app
+./build-mac.sh --install  # builds it and copies it into /Applications
+```
+
+On the Mac, shortcuts use ⌘ instead of Ctrl, and Focus Mode is ⌃⌘F (also under View in the menu bar). File › Download uses a normal Save dialog, and ⌘P prints. Documents are kept inside the app (in `~/Library/WebKit/com.stickmanninja.sethwriter`); use File › Download to keep a copy anywhere else.
+
+The Mac code is in `mac/`: `main.swift` is the app and `make-icon.swift` draws the icon. `build-mac.sh` changes the Windows wording (Ctrl, F11, "this browser") to Mac wording in the copy of `app/SethWriter.html` it packs into the app, so the editor itself stays shared.
