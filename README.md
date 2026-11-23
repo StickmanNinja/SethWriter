@@ -30,7 +30,8 @@ Writer opens in its own Microsoft Edge app window. On older Windows without Edge
 - **Insert:** tables, pictures, links, horizontal lines, today's date and symbols.
 - **Layout:** margins, portrait or landscape, and Letter, Legal or A4 page sizes.
 - **View:** zoom, ruler, page boundaries, word count and **Focus Mode**.
-- **File:** new documents (blank, letter, or the welcome guide), recent documents, open `.txt` and `.html` files, and download as `.html` or `.txt`.
+- **File:** new documents (blank, letter, or the welcome guide), recent documents, open `.txt` and `.html` files, and save a copy as a **Word document (.docx)**, PDF, web page or plain text.
+- **Print:** Ctrl+P (⌘P on a Mac), the printer button at the top, or **File › Print**. Pages print at the size and margins set on the Layout tab, with just your document on them.
 - Your work saves automatically as you type, with full undo and redo.
 
 ### Focus Mode
@@ -48,6 +49,7 @@ Press **F11** or choose **View › Focus Mode**. Writer goes full screen with gr
 | Align left, center, right, justify | Ctrl+L, Ctrl+E, Ctrl+R, Ctrl+J |
 | Bigger or smaller text | Ctrl+], Ctrl+[ |
 | Save now | Ctrl+S |
+| Print | Ctrl+P |
 | Focus Mode | F11 |
 
 ## Where your documents are kept

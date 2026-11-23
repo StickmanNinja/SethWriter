@@ -9,7 +9,5 @@
 
 ## What's new
 
-- SethWriter is now called **Writer**, with a new W icon.
-- A Mac version, with the Mac menu bar, ⌘ shortcuts, Print, and Focus Mode on ⌃⌘F.
-- The Windows installer now lists Writer in Apps & features, and opens it in Google Chrome on Windows versions without Microsoft Edge.
-- Documents from SethWriter move over to Writer on its first run.
+- **Save as a Word document.** File › Save a copy › Word document (.docx) keeps your formatting, headings, lists, tables, pictures, links and page layout. It opens in Microsoft Word, Pages, Google Docs and LibreOffice.
+- **Print.** Press Ctrl+P (⌘P on a Mac), click the printer button at the top, or choose File › Print. Only your document prints, at the page size and margins from the Layout tab, and highlights keep their colors. Choose Save as PDF in the print dialog to make a PDF.

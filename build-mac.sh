@@ -7,7 +7,7 @@ set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 build="$here/build"
 app="$build/Writer.app"
-version="1.1.0"
+version="1.2.0"
 
 rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
@@ -25,7 +25,7 @@ mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
       -e 's/ to this browser//g' \
       -e 's/Recent documents in this browser/Recent documents/' \
       -e 's/browser storage is full/storage is full/g' \
-      -e 's/^})();$/window.writer = { undo, redo, saveNow, toast, openBackstage, toggleFocus: () => setFocus(!inFocus()) }; })();/' \
+      -e 's/^})();$/window.writer = { undo, redo, saveNow, toast, openBackstage, print: printDoc, toggleFocus: () => setFocus(!inFocus()) }; })();/' \
       "$here/app/Writer.html"
   printf '\n%s\n' '</body></html>'
 } > "$app/Contents/Resources/Writer.html"

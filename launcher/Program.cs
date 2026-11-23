@@ -16,13 +16,13 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("Writer")]
 [assembly: AssemblyProduct("Writer")]
 [assembly: AssemblyDescription("Writer, a simple word processor")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
 
 static class Program
 {
     const string AppName = "Writer";
-    const string Version = "1.1.0";
+    const string Version = "1.2.0";
     const string OldName = "SethWriter";   // the app's first name; its documents move over on first run
     const string UninstallKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\Writer";
     const string HomePage = "https://github.com/StickmanNinja/SethWriter";

@@ -23,7 +23,7 @@ final class PageHandler: NSObject, WKURLSchemeHandler {
     func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {}
 }
 
-final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate, WKScriptMessageHandler {
     var window: NSWindow!
     var web: WKWebView!
     let handler = PageHandler()
@@ -33,6 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
 
         let cfg = WKWebViewConfiguration()
         cfg.setURLSchemeHandler(handler, forURLScheme: "sethwriter")
+        cfg.userContentController.add(self, name: "writer")      // the page asks the app to print
         cfg.websiteDataStore = .default()                       // keeps documents between launches
         cfg.preferences.isElementFullscreenEnabled = true       // Focus Mode goes full screen
         cfg.preferences.setValue(true, forKey: "developerExtrasEnabled")
@@ -140,10 +141,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
     @objc func zoomReset() { web.pageZoom = 1 }
     @objc func zoomIn() { web.pageZoom = min(web.pageZoom + 0.1, 3) }
     @objc func zoomOut() { web.pageZoom = max(web.pageZoom - 0.1, 0.5) }
-    @objc func printDoc() {
-        let op = web.printOperation(with: NSPrintInfo.shared)
+    @objc func printDoc() { js("try{writer.print()}catch(e){}") }
+
+    // MARK: printing. WebKit's own window.print() does nothing in an app, so the page sends its page size and
+    // margins here and this opens the normal Mac print dialog (which also has Save as PDF).
+    func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let p = message.body as? [String: Any], p["action"] as? String == "print" else { return }
+        let op = web.printOperation(with: printInfo(p))
+        op.jobTitle = (p["name"] as? String) ?? appName
+        op.showsPrintPanel = true
+        op.showsProgressPanel = true
         op.view?.frame = web.bounds
         op.runModal(for: window, delegate: nil, didRun: nil, contextInfo: nil)
+    }
+    func printInfo(_ p: [String: Any]) -> NSPrintInfo {
+        let info = NSPrintInfo.shared.copy() as! NSPrintInfo
+        let w = (p["width"] as? Double) ?? 8.5, h = (p["height"] as? Double) ?? 11
+        let m = (p["margins"] as? [Double]) ?? [1, 1, 1, 1]          // top, right, bottom, left, in inches
+        info.paperSize = NSSize(width: min(w, h) * 72, height: max(w, h) * 72)
+        info.orientation = (p["landscape"] as? Bool) == true ? .landscape : .portrait
+        info.topMargin = m[0] * 72; info.rightMargin = m[1] * 72; info.bottomMargin = m[2] * 72; info.leftMargin = m[3] * 72
+        info.horizontalPagination = .automatic; info.verticalPagination = .automatic
+        info.isHorizontallyCentered = false; info.isVerticallyCentered = false
+        return info
     }
 
     // MARK: links open in the default browser
