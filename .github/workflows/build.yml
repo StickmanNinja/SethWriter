@@ -1,0 +1,85 @@
+# Builds the Windows installer and the Mac disk image on every pull request, and on a version tag (v1.2.3)
+# publishes both as a GitHub release, so the README's download links always point at the newest build.
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Writer-Setup.exe
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Install, check and uninstall it
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dir = Join-Path $env:LOCALAPPDATA 'Programs\Writer'
+          $key = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Writer'
+          $p = Start-Process build\Writer-Setup.exe -ArgumentList '--quiet','--no-launch' -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "installer exited with $($p.ExitCode)" }
+          foreach ($f in 'Writer.exe','Writer.html') { if (-not (Test-Path (Join-Path $dir $f))) { throw "missing $f" } }
+          if (-not (Test-Path (Join-Path ([Environment]::GetFolderPath('Programs')) 'Writer.lnk'))) { throw 'no Start menu shortcut' }
+          $entry = Get-ItemProperty $key
+          if ($entry.DisplayName -ne 'Writer') { throw 'not listed in Apps & features' }
+          Write-Host "Installed $($entry.DisplayName) $($entry.DisplayVersion)"
+          $p = Start-Process (Join-Path $dir 'Writer.exe') -ArgumentList '--uninstall','--quiet' -Wait -PassThru
+          Start-Sleep -Seconds 6
+          if (Test-Path $key) { throw 'Apps & features entry left behind' }
+          if (Test-Path $dir) { throw 'install folder left behind' }
+          Write-Host 'Uninstalled cleanly'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: build/Writer-Setup.exe
+
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Writer.dmg
+        run: ./build-mac.sh --dmg
+
+      - name: Check it
+        run: |
+          set -e
+          lipo -info build/Writer.app/Contents/MacOS/Writer | grep -q "x86_64 arm64"
+          codesign --verify --deep build/Writer.app
+          plutil -lint build/Writer.app/Contents/Info.plist
+          hdiutil verify build/Writer.dmg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac
+          path: build/Writer.dmg
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, mac]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/Writer-Setup.exe dist/Writer.dmg \
+            --title "Writer ${GITHUB_REF_NAME#v}" --notes-file .github/release-notes.md

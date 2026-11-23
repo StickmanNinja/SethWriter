@@ -1,16 +1,28 @@
-# SethWriter
+# Writer
 
-A simple word processor for Windows 11 that looks and feels like the classic desktop word processors, with only the features you actually use.
+A simple word processor for Windows and Mac that looks and feels like the classic desktop word processors, with only the features you actually use.
 
 ## Download
 
-**[Download SethWriter.exe](https://github.com/StickmanNinja/SethWriter/releases/latest/download/SethWriter.exe)** (about 210 KB)
+| | |
+| --- | --- |
+| **Windows** | **[Download Writer-Setup.exe](https://github.com/StickmanNinja/SethWriter/releases/latest/download/Writer-Setup.exe)** (about 230 KB). Windows 7 SP1, 8, 8.1, 10 and 11. |
+| **Mac** | **[Download Writer.dmg](https://github.com/StickmanNinja/SethWriter/releases/latest/download/Writer.dmg)** (about 350 KB). macOS 13 Ventura or later, Apple Silicon or Intel. |
 
-1. Open the downloaded `SethWriter.exe`.
+### Windows
+
+1. Open the downloaded `Writer-Setup.exe`.
 2. Windows may show **"Windows protected your PC"** because the app isn't code-signed. Choose **More info**, then **Run anyway**.
-3. SethWriter installs itself for your Windows account (no admin rights needed), adds a **Start menu** shortcut and a **Desktop** shortcut, and opens.
+3. Writer installs itself for your Windows account (no admin rights needed), adds a **Start menu** shortcut and a **Desktop** shortcut, lists itself in **Apps & features**, and opens.
 
-You can delete the downloaded file afterwards. To pin SethWriter to the taskbar, right-click it in the Start menu and choose **Pin to taskbar**.
+You can delete the downloaded file afterwards. To pin Writer to the taskbar, right-click it in the Start menu and choose **Pin to taskbar**.
+
+Writer opens in its own Microsoft Edge app window. On older Windows without Edge it uses Google Chrome, and without either it opens in your default browser. Windows 7 needs .NET Framework 4, which Windows Update installs; Windows 8 and later already have it.
+
+### Mac
+
+1. Open `Writer.dmg` and drag **Writer** onto **Applications**.
+2. The first time you open it, macOS may say it can't check Writer for malicious software, because the app isn't notarized by Apple. Choose **Done**, then open **System Settings › Privacy & Security**, scroll down and choose **Open Anyway**.
 
 ## What it does
 
@@ -23,7 +35,7 @@ You can delete the downloaded file afterwards. To pin SethWriter to the taskbar,
 
 ### Focus Mode
 
-Press **F11** or choose **View › Focus Mode**. SethWriter goes full screen with green text on a black background and hides everything except your words. A small word and page count sits in the corner. Press **Esc** to return.
+Press **F11** or choose **View › Focus Mode**. Writer goes full screen with green text on a black background and hides everything except your words. A small word and page count sits in the corner. Press **Esc** to return.
 
 ### Keyboard shortcuts
 
@@ -40,41 +52,43 @@ Press **F11** or choose **View › Focus Mode**. SethWriter goes full screen wit
 
 ## Where your documents are kept
 
-Documents are saved on your PC in `%LOCALAPPDATA%\Programs\SethWriter\Profile`. Use **File › Download** to keep a copy anywhere else or to move a document to another computer.
+- **Windows:** in `%LOCALAPPDATA%\Programs\Writer\Profile`.
+- **Mac:** inside the app's storage, in `~/Library/WebKit/com.stickmanninja.sethwriter`.
 
-## How it works
-
-`SethWriter.exe` is a small launcher. It carries the editor (`app/SethWriter.html`) inside it, copies itself to `%LOCALAPPDATA%\Programs\SethWriter`, and opens the editor in its own Microsoft Edge app window. Edge comes with Windows 11, so there's nothing else to install. The editor works offline; the extra document fonts load from Google Fonts when you're online and fall back to similar Windows fonts when you're not.
+Use **File › Download** to keep a copy anywhere else or to move a document to another computer. Documents saved by SethWriter (Writer's old name) move over to Writer on its first run.
 
 ## Uninstall
 
-Run this in PowerShell. It removes SethWriter, its shortcuts and the documents saved in it, so download anything you want to keep first.
+- **Windows:** open **Apps & features** (Windows 10/11) or **Programs and Features** (Windows 7/8), choose **Writer**, then **Uninstall**.
+- **Mac:** drag **Writer** from Applications to the Trash.
 
-```powershell
-& "$env:LOCALAPPDATA\Programs\SethWriter\SethWriter.exe" --uninstall
-```
+Uninstalling on Windows removes the documents saved in Writer, so download anything you want to keep first.
+
+## How it works
+
+The editor is one web page, `app/Writer.html`, shared by both versions. It works offline; the extra document fonts load from Google Fonts when you're online and fall back to similar system fonts when you're not.
+
+- **Windows:** `Writer-Setup.exe` is a small installer and launcher in one (`launcher/Program.cs`). It carries the editor inside it, copies itself to `%LOCALAPPDATA%\Programs\Writer`, and opens the editor in its own Edge (or Chrome) app window.
+- **Mac:** `Writer.app` is a small Swift app (`mac/main.swift`) that shows the editor in a WebKit window, with the Mac menu bar, ⌘ shortcuts, Print (⌘P), and Focus Mode on ⌃⌘F. Its build changes the Windows wording (Ctrl, F11, "this browser") to Mac wording in the copy of the editor it packs.
 
 ## Build it yourself
 
-Uses the C# compiler that comes with Windows; nothing to install.
+**Windows**, with the C# compiler that comes with Windows (nothing to install):
 
 ```powershell
-.\build.ps1
+.\build.ps1        # builds build\Writer-Setup.exe
 ```
 
-`tools\make-icon.ps1` redraws `assets\icon.ico` if you change the icon design.
-
-## Mac version
-
-SethWriter also runs as a native Mac app (macOS 13 or later, Apple Silicon or Intel). It is a small Swift app that shows the same editor in a WebKit window, so there is nothing else to install.
-
-Build it with the Swift compiler from Apple's Command Line Tools (`xcode-select --install` if you don't have them):
+**Mac**, with the Swift compiler from Apple's Command Line Tools (`xcode-select --install` if you don't have them):
 
 ```bash
-./build-mac.sh            # builds build/SethWriter.app
+./build-mac.sh            # builds build/Writer.app
 ./build-mac.sh --install  # builds it and copies it into /Applications
+./build-mac.sh --dmg      # builds build/Writer.dmg
 ```
 
-On the Mac, shortcuts use ⌘ instead of Ctrl, and Focus Mode is ⌃⌘F (also under View in the menu bar). File › Download uses a normal Save dialog, and ⌘P prints. Documents are kept inside the app (in `~/Library/WebKit/com.stickmanninja.sethwriter`); use File › Download to keep a copy anywhere else.
+`tools/make-icon.swift` (run on a Mac) draws the icon for both: `--mac` for the Mac app and `--ico assets/icon.ico` for Windows.
 
-The Mac code is in `mac/`: `main.swift` is the app and `make-icon.swift` draws the icon. `build-mac.sh` changes the Windows wording (Ctrl, F11, "this browser") to Mac wording in the copy of `app/SethWriter.html` it packs into the app, so the editor itself stays shared.
+## Releases
+
+GitHub Actions (`.github/workflows/build.yml`) builds and tests both installers on every pull request. Pushing a version tag such as `v1.2.0` publishes them as a release, which is where the download links above point.

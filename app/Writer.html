@@ -1,4 +1,4 @@
-<title>SethWriter</title>
+<title>Writer</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1' y='1' width='30' height='30' rx='6' fill='%232b5797'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -282,7 +282,7 @@ body.focusing::before{background:var(--focus-bg)}
 <div id="app">
   <header class="titlebar pad">
     <div class="qa">
-      <div class="brand"><b>S</b><span>SethWriter</span></div>
+      <div class="brand"><b>W</b><span>Writer</span></div>
       <button class="qbtn" id="qaSave" title="Save (Ctrl+S)" aria-label="Save" data-icon="save"></button>
       <button class="qbtn" id="qaUndo" title="Undo (Ctrl+Z)" aria-label="Undo" data-icon="undo"></button>
       <button class="qbtn" id="qaRedo" title="Redo (Ctrl+Y)" aria-label="Redo" data-icon="redo"></button>
@@ -291,7 +291,7 @@ body.focusing::before{background:var(--focus-bg)}
       <input id="docName" aria-label="Document name" spellcheck="false" autocomplete="off">
       <span id="saveState">Saved</span>
     </div>
-    <div class="tb-right">SethWriter</div>
+    <div class="tb-right">Writer</div>
   </header>
 
   <nav class="tabs pad" role="tablist" id="tabs">
@@ -521,7 +521,7 @@ body.focusing::before{background:var(--focus-bg)}
       <h2>New</h2>
       <div class="tiles">
         <button class="tile" id="newBlank"><span class="thumb"></span><span>Blank document</span></button>
-        <button class="tile" id="newWelcome"><span class="thumb"><i class="t"></i><i></i><i></i><i style="width:80%"></i><i class="h"></i><i></i><i></i><i style="width:60%"></i><i class="h"></i><i></i><i style="width:75%"></i></span><span>Welcome to SethWriter</span></button>
+        <button class="tile" id="newWelcome"><span class="thumb"><i class="t"></i><i></i><i></i><i style="width:80%"></i><i class="h"></i><i></i><i></i><i style="width:60%"></i><i class="h"></i><i></i><i style="width:75%"></i></span><span>Welcome to Writer</span></button>
         <button class="tile" id="newLetter"><span class="thumb"><i style="width:40%;margin-left:auto"></i><i style="width:35%;margin-left:auto"></i><i style="width:30%;margin-top:10px"></i><i style="width:45%;margin-top:8px"></i><i></i><i></i><i style="width:70%"></i><i></i><i style="width:55%"></i><i style="width:25%;margin-top:10px"></i></span><span>Letter</span></button>
       </div>
     </section>
@@ -657,8 +657,8 @@ const prefs = Object.assign({ zoom: 1, ruler: true, lines: true, fitDone: false 
 const savePrefs = () => lsSet(PREF, prefs);
 
 /* ---------- Sample content ---------- */
-const WELCOME = `<h1>Welcome to SethWriter</h1>
-<p>SethWriter is a simple word processor that runs in your browser. Everything you type is saved automatically to this browser, so you can close the tab and pick up where you left off.</p>
+const WELCOME = `<h1>Welcome to Writer</h1>
+<p>Writer is a simple word processor that runs in your browser. Everything you type is saved automatically to this browser, so you can close the tab and pick up where you left off.</p>
 <h2>Getting started</h2>
 <p>Click anywhere on this page and start typing. Use the <b>Home</b> tab to change fonts, add <i>emphasis</i>, <u>underline</u> or <span style="background-color: rgb(255, 255, 0);">highlight</span> text, and build lists:</p>
 <ul><li>Choose a <b>style</b> such as Heading 1 or Quote from the Styles gallery.</li><li>Press <b>Tab</b> inside a list to indent an item, and <b>Shift+Tab</b> to bring it back.</li><li>Open the <b>File</b> tab to start a new document, reopen a recent one, or download a copy.</li></ul>
@@ -691,7 +691,7 @@ function loadDoc(d) {
   ed.innerHTML = d.html || '<p><br></p>';
   ensureContent();
   $('#docName').value = cur.name;
-  document.title = cur.name + ' · SethWriter';
+  document.title = cur.name + ' · Writer';
   applyLayout();
   hist.stack = []; hist.i = -1; pushHist();
   clearFind();
@@ -1343,7 +1343,7 @@ $('#imgInput').addEventListener('change', e => {
 });
 
 /* doc name */
-$('#docName').addEventListener('change', e => { cur.name = e.target.value.trim() || nextName(); e.target.value = cur.name; document.title = cur.name + ' · SethWriter'; saveNow(); });
+$('#docName').addEventListener('change', e => { cur.name = e.target.value.trim() || nextName(); e.target.value = cur.name; document.title = cur.name + ' · Writer'; saveNow(); });
 $('#docName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); ed.focus(); } });
 
 /* ---------- Backstage ---------- */
@@ -1358,7 +1358,7 @@ function setBs(k) {
 $('.bs-nav').addEventListener('click', e => { const b = e.target.closest('[data-bs]'); if (b) setBs(b.dataset.bs); });
 $('#bsBack').addEventListener('click', closeBackstage);
 $('#newBlank').addEventListener('click', () => newDoc());
-$('#newWelcome').addEventListener('click', () => newDoc(WELCOME, 'Welcome to SethWriter'));
+$('#newWelcome').addEventListener('click', () => newDoc(WELCOME, 'Welcome to Writer'));
 $('#newLetter').addEventListener('click', () => newDoc(LETTER, 'Letter'));
 function fmtDate(t) {
   const d = new Date(t), now = new Date();
@@ -1469,7 +1469,7 @@ pageWrap.classList.toggle('no-ruler', !prefs.ruler); $('#optRuler').checked = pr
 page.classList.toggle('lines', prefs.lines); $('#optLines').checked = prefs.lines;
 const startId = lsGet(CUR, null);
 if (startId && docs[startId]) loadDoc(docs[startId]);
-else { const any = Object.values(docs).sort((a, b) => b.updated - a.updated)[0]; if (any) loadDoc(any); else newDoc(WELCOME, 'Welcome to SethWriter'); }
+else { const any = Object.values(docs).sort((a, b) => b.updated - a.updated)[0]; if (any) loadDoc(any); else newDoc(WELCOME, 'Welcome to Writer'); }
 setZoom(prefs.zoom || 1);
 const [pw] = pageDims();
 if (canvasEl.clientWidth < pw * 96 * prefs.zoom + 48) fitWidth();

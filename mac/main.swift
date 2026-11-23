@@ -1,17 +1,18 @@
-// SethWriter for macOS.
+// Writer for macOS.
 // A small native window (AppKit + WebKit) around the same editor page the Windows version uses.
-// The page is served from inside the app as sethwriter://app/ so its documents (kept in the page's
-// local storage) stay put between launches. Nothing else to install: WebKit comes with macOS.
+// The page is served from inside the app as sethwriter://app/ so its documents (kept in the page's local storage)
+// stay put between launches. The address keeps the app's first name on purpose: earlier documents are stored under it.
+// Nothing else to install: WebKit comes with macOS.
 import Cocoa
 import WebKit
 import UniformTypeIdentifiers
 
-let appName = "SethWriter"
+let appName = "Writer"
 
 // Serves the editor page packed in the app bundle.
 final class PageHandler: NSObject, WKURLSchemeHandler {
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
-        guard let file = Bundle.main.url(forResource: "SethWriter", withExtension: "html"),
+        guard let file = Bundle.main.url(forResource: "Writer", withExtension: "html"),
               let data = try? Data(contentsOf: file), let url = task.request.url else {
             task.didFailWithError(NSError(domain: NSURLErrorDomain, code: NSURLErrorFileDoesNotExist)); return
         }
@@ -51,7 +52,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         window.delegate = self
         window.isReleasedWhenClosed = false
         window.center()
-        window.setFrameAutosaveName("SethWriterMain")
+        window.setFrameAutosaveName("WriterMain")
         window.collectionBehavior.insert(.fullScreenPrimary)
         window.makeKeyAndOrderFront(nil)
 
@@ -67,11 +68,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
 
     // Save the open document before quitting or closing the window.
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        web.evaluateJavaScript("try{sethwriter.saveNow()}catch(e){}") { _, _ in sender.reply(toApplicationShouldTerminate: true) }
+        web.evaluateJavaScript("try{writer.saveNow()}catch(e){}") { _, _ in sender.reply(toApplicationShouldTerminate: true) }
         return .terminateLater
     }
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        web.evaluateJavaScript("try{sethwriter.saveNow()}catch(e){}", completionHandler: nil)
+        web.evaluateJavaScript("try{writer.saveNow()}catch(e){}", completionHandler: nil)
         return true
     }
 
@@ -91,7 +92,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         top(appName, [
             item("About \(appName)", #selector(NSApplication.orderFrontStandardAboutPanel(_:))),
             .separator(),
-            item("Hide \(appName)", #selector(NSApplication.hide(_:))),   // no ⌘H: that is Replace in SethWriter
+            item("Hide \(appName)", #selector(NSApplication.hide(_:))),   // no ⌘H: that is Replace in Writer
             item("Hide Others", #selector(NSApplication.hideOtherApplications(_:)), "h", [.command, .option]),
             item("Show All", #selector(NSApplication.unhideAllApplications(_:))),
             .separator(),
@@ -131,11 +132,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
     }
 
     func js(_ s: String) { web.evaluateJavaScript(s, completionHandler: nil) }
-    @objc func undo() { js("try{sethwriter.undo()}catch(e){}") }
-    @objc func redo() { js("try{sethwriter.redo()}catch(e){}") }
-    @objc func saveNow() { js("try{sethwriter.toast(sethwriter.saveNow()?'Saved':'Not saved: storage is full')}catch(e){}") }
-    @objc func openBackstage() { js("try{sethwriter.openBackstage()}catch(e){}") }
-    @objc func toggleFocus() { js("try{sethwriter.toggleFocus()}catch(e){}") }
+    @objc func undo() { js("try{writer.undo()}catch(e){}") }
+    @objc func redo() { js("try{writer.redo()}catch(e){}") }
+    @objc func saveNow() { js("try{writer.toast(writer.saveNow()?'Saved':'Not saved: storage is full')}catch(e){}") }
+    @objc func openBackstage() { js("try{writer.openBackstage()}catch(e){}") }
+    @objc func toggleFocus() { js("try{writer.toggleFocus()}catch(e){}") }
     @objc func zoomReset() { web.pageZoom = 1 }
     @objc func zoomIn() { web.pageZoom = min(web.pageZoom + 0.1, 3) }
     @objc func zoomOut() { web.pageZoom = max(web.pageZoom - 0.1, 0.5) }
@@ -182,7 +183,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         }
     }
     func download(_ download: WKDownload, didFailWithError error: Error, resumeData: Data?) {
-        js("try{sethwriter.toast('Couldn’t save the file. Try again.')}catch(e){}")
+        js("try{writer.toast('Couldn’t save the file. Try again.')}catch(e){}")
     }
 
     // MARK: Open and Insert › Picture use a normal Open dialog
